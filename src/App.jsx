@@ -1,5 +1,5 @@
 import 'bulma/css/bulma.css';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.scss';
 import classNames from 'classnames';
 
@@ -17,41 +17,48 @@ export const goodsFromServer = [
 ];
 
 export const App = () => {
-  const [goods, setGoods] = useState([...goodsFromServer]);
+  // const [goods, setGoods] = useState([...goodsFromServer]);
   const [isReversed, setIsReversed] = useState(false);
   const [sortType, setSortType] = useState(null);
 
-  const handleSortAlpha = () => {
-    const sorted = [...goods].sort((a, b) => a.localeCompare(b));
+  const getSortedGoods = () => {
+    const sorted = [...goodsFromServer];
 
-    setGoods(sorted);
+    if (sortType === 'alpha') {
+      sorted.sort((a, b) => a.localeCompare(b));
+    } else if (sortType === 'length') {
+      sorted.sort((a, b) => a.length - b.length);
+    }
+
+    if (isReversed) {
+      sorted.reverse();
+    }
+
+    return sorted;
+  };
+
+  const goods = getSortedGoods();
+
+  const handleSortAlpha = () => {
     setSortType('alpha');
     setIsReversed(false);
   };
 
   const handleSortLength = () => {
-    const sorted = [...goods].sort((a, b) => a.length - b.length);
-
-    setGoods(sorted);
     setSortType('length');
     setIsReversed(false);
   };
 
   const handleReverse = () => {
-    const reversed = [...goods].reverse();
-
-    setGoods(reversed);
     setIsReversed(prev => !prev);
   };
 
   const handleReset = () => {
-    setGoods([...goodsFromServer]);
     setSortType(null);
     setIsReversed(false);
   };
 
-  const isInitialOrder =
-    JSON.stringify(goods) === JSON.stringify(goodsFromServer);
+  const isInitialOrder = sortType === null && !isReversed;
 
   return (
     <div className="section content">
